@@ -1,0 +1,10 @@
+{
+  "name": "Babalu Mobiles EMI Calculator",
+  "short_name": "EMI Calculator",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f9",
+  "theme_color": "#12304a",
+  "description": "EMI and personal finance calculator",
+  "icons": []
+}

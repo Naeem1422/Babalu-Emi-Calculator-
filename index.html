@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Babalu Mobiles EMI Calculator</title>
+<meta name="theme-color" content="#12304a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+
+<style>
+:root{
+  --navy:#12304a;
+  --blue:#1769e0;
+  --blue-dark:#0d4fa8;
+  --bg:#f3f6f9;
+  --card:#ffffff;
+  --text:#17202a;
+  --muted:#667788;
+  --border:#d8e0e8;
+  --soft:#eef5ff;
+  --success:#16835b;
+}
+*{box-sizing:border-box}
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  padding:24px 14px;
+  color:var(--text);
+}
+.card{
+  max-width:560px;
+  margin:auto;
+  background:var(--card);
+  border:1px solid #e1e7ed;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 8px 30px rgba(18,48,74,.10);
+}
+.card>h1{
+  margin:0;
+  padding:22px 24px 4px;
+  text-align:left;
+  font-size:24px;
+  color:var(--navy);
+  letter-spacing:-.3px;
+}
+.sub{
+  text-align:left;
+  color:var(--blue);
+  font-size:13px;
+  font-weight:700;
+  padding:0 24px 20px;
+  border-bottom:1px solid var(--border);
+}
+label{
+  font-weight:700;
+  display:block;
+  margin:18px 24px 7px;
+  font-size:13px;
+  color:#33495c;
+}
+input,select{
+  width:calc(100% - 48px);
+  margin:0 24px;
+  padding:13px 14px;
+  border:1px solid #cbd5df;
+  border-radius:10px;
+  font-size:16px;
+  color:var(--text);
+  background:#fff;
+  outline:none;
+}
+input:focus,select:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(23,105,224,.10);
+}
+input[readonly]{
+  background:#f5f7f9;
+  color:#526474;
+  font-weight:700;
+  cursor:not-allowed;
+}
+button{
+  width:calc(100% - 48px);
+  margin:18px 24px 0;
+  padding:14px;
+  border:0;
+  border-radius:10px;
+  background:var(--blue);
+  color:white;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.1px;
+  box-shadow:0 3px 8px rgba(23,105,224,.18);
+}
+button:hover{background:var(--blue-dark)}
+.result{
+  margin:24px;
+  background:var(--soft);
+  border:1px solid #d5e5fa;
+  border-radius:16px;
+  padding:18px;
+}
+.result:before{
+  content:"EMI SUMMARY";
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:var(--blue);
+  margin-bottom:8px;
+}
+.big{
+  text-align:center;
+  font-size:34px;
+  font-weight:800;
+  margin:7px 0 16px;
+  color:var(--navy);
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  padding:10px 0;
+  border-bottom:1px solid #d7e4f2;
+  font-size:14px;
+}
+.row b{text-align:right}
+.row:last-child{border:0}
+table{
+  width:calc(100% - 48px);
+  margin:20px 24px;
+  border-collapse:collapse;
+  font-size:12px;
+}
+th,td{padding:8px 4px;border-bottom:1px solid #ddd;text-align:right}
+th:first-child,td:first-child{text-align:left}
+.note{
+  font-size:11px;
+  color:var(--muted);
+  margin:15px 24px;
+  line-height:1.5;
+}
+.share-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  margin:18px 24px;
+  box-shadow:0 3px 12px rgba(18,48,74,.06);
+}
+.share-card h2{
+  margin:0 0 12px;
+  font-size:17px;
+  text-align:center;
+  color:var(--navy);
+}
+.share-card .brand{
+  font-weight:700;
+  text-align:center;
+  color:var(--blue);
+  margin-bottom:12px;
+}
+@media(max-width:420px){
+  body{padding:10px 8px}
+  .card{border-radius:16px}
+  .card>h1{padding-left:18px;padding-right:18px}
+  .sub{padding-left:18px;padding-right:18px}
+  label{margin-left:18px;margin-right:18px}
+  input,select{width:calc(100% - 36px);margin-left:18px;margin-right:18px}
+  button{width:calc(100% - 36px);margin-left:18px;margin-right:18px}
+  .result{margin:18px}
+  .share-card{margin:18px}
+  .note{margin-left:18px;margin-right:18px}
+  table{width:calc(100% - 36px);margin-left:18px;margin-right:18px}
+}
+@media print{
+  body{background:#fff!important;padding:0!important;margin:0!important}
+  .card{max-width:none!important;box-shadow:none!important;border-radius:0!important;padding:10px!important}
+  .card>h1,.card>.sub,
+  .card>label,.card>input,.card>select,
+  .card>button,.note:not(#frequencyNote),
+  table{display:none!important}
+  .result{margin-top:0!important;border:1px solid #ccc!important;background:#fff!important}
+  #screenshotCard{display:block!important;background:#fff!important;border:1px solid #ccc!important;box-shadow:none!important;page-break-inside:avoid}
+  #frequencyNote{display:block!important}
+  @page{size:A4;margin:12mm}
+}
+
+/* PWA / app-style enhancements */
+html { background:#f3f6f9; }
+body { padding-top: max(10px, env(safe-area-inset-top)); padding-bottom:max(12px, env(safe-area-inset-bottom)); }
+.card { max-width:600px; min-height:calc(100vh - 24px); }
+button { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+input,select,button { min-height:48px; }
+@media (display-mode: standalone) {
+  body { padding-top:max(12px, env(safe-area-inset-top)); }
+  .card { min-height:100vh; border-radius:0; border-left:0; border-right:0; }
+}
+
+</style>
+</head>
+<body>
+<div class="card">
+<h1></h1>
+<div class="sub" style="font-weight:700;color:#1769e0;margin-bottom:4px">ZestMoney Finance / BME Personal Finance</div>
+
+
+<label>Mobile / Loan Amount (₹)</label>
+<input id="price" type="number" value="0" min="0">
+
+<label>Finance Provider</label>
+<select id="provider">
+<option selected>ZestMoney Finance / BME Personal Finance</option>
+<option value="personal">Personal Finance</option>
+</select>
+
+<label>CIBIL Score</label>
+<select id="cibilScore" onchange="updateRate()">
+<option value="0" selected>0</option>
+<option value="800">800+ — Excellent</option>
+<option value="750">750–799 — Very Good</option>
+<option value="700">700–749 — Good</option>
+<option value="650">650–699 — Fair</option>
+<option value="300">Below 650 — Lower Score</option>
+</select>
+
+<label>Down Payment (%) <span id="downLockLabel" style="color:#b45309;font-size:11px"></span></label>
+<select id="downPct" onchange="syncDownFromPct()">
+<option value="0" selected>0%</option><option value="20">20%</option><option value="25">25%</option><option value="30">30%</option>
+<option value="40">40%</option><option value="45">45%</option><option value="50">50%</option>
+<option value="custom">Custom</option>
+</select>
+
+<label>Down Payment (₹) 🔒</label>
+<input id="down" type="number" value="0" min="0" readonly>
+
+<div id="cibilDownNote" class="note" style="margin-top:6px;display:none;font-weight:700;color:#b45309">For loans above ₹10,000, down payment is automatically fixed by CIBIL and cannot be reduced.</div>
+
+<label>Annual Interest Rate (%) <span id="rateLockLabel">🔒</span></label>
+<input id="rate" type="number" value="0" readonly title="Interest rate is calculated automatically">
+<div id="personalFeeWrap" style="display:none">
+<label>Processing Fee (₹) — Personal Finance</label>
+<input id="personalFee" type="number" value="0" min="0">
+</div>
+<div id="rateNote" class="note" style="margin-top:6px;display:none">Higher CIBIL score + higher down payment = lower interest rate. 40% or more down payment = 0% interest for Good/Very Good/Excellent CIBIL; Fair and Lower Score still carry interest. Interest rate is calculated automatically.</div>
+
+<label>EMI Payment Frequency</label>
+<select id="frequency" onchange="updateTenureOptions();calculate()">
+<option value="monthly" selected>Monthly EMI</option>
+<option value="daily">Daily EMI</option>
+<option value="weekly">Weekly EMI</option>
+<option value="15days">15 Days EMI</option>
+</select>
+
+<label id="tenureLabel">EMI Tenure (Months)</label>
+<select id="months" onchange="calculate()">
+<option value="0" selected>0</option><option>3</option><option>6</option><option>9</option><option>12</option>
+<option>18</option><option>24</option><option>36</option>
+</select>
+
+<button onclick="calculate()">Calculate EMI</button>
+<button id="installBtn" style="display:none;background:#12304a">📲 Install App</button>
+
+<button onclick="shareEMI()" style="background:#25a244">📤 Share EMI Details</button>
+<button onclick="saveScreenshot()" style="background:#6f42c1">📸 Save EMI Screenshot</button>
+  <button onclick="printEMI()" style="background:#343a40">🖨️ Print EMI Details</button>
+
+<div class="result">
+<div class="row"><span>Finance Provider</span><b id="providerOut">ZestMoney Finance / BME Personal Finance</b></div>
+<div id="emiLabel">Monthly EMI</div>
+<div class="big" id="emi">₹0</div>
+<div class="note" id="frequencyNote" style="text-align:center;margin-top:-8px;margin-bottom:10px">
+Payment amount changes according to the selected EMI frequency.
+</div>
+<div class="row"><span>Loan Amount</span><b id="loanAmountOut">₹0</b></div>
+<div class="row"><span>Processing Fee</span><b id="processFee">₹0</b></div>
+<div class="row"><span>Finance Amount (Loan + Fee)</span><b id="principal">₹0</b></div>
+<div class="row"><span>Total Interest</span><b id="interest">₹0</b></div>
+<div class="row"><span>Total Repayment</span><b id="total">₹0</b></div>
+</div>
+
+<div id="screenshotCard" class="share-card">
+  <div class="brand"></div>
+  <div id="shotFinanceName" style="text-align:center;font-weight:700;font-size:24px;margin:-4px 0 10px;color:#1d4ed8;">ZestMoney Finance / BME Personal Finance</div>
+  <h2>EMI Payment Details</h2>
+  <div class="row"><span>Mobile / Loan Amount</span><b id="shotPrice">₹0</b></div>
+  <div class="row"><span>Down Payment</span><b id="shotDown">₹0</b></div>
+  <div class="row"><span>Finance Provider</span><b id="shotProvider">ZestMoney Finance / BME Personal Finance</b></div>
+  <div class="row"><span>Payment Frequency</span><b id="shotFrequency">Monthly</b></div>
+  <div class="row"><span>Tenure</span><b id="shotTenure">12 Months</b></div>
+  <div class="row"><span>Interest Rate</span><b id="shotRate">0%</b></div>
+  <div class="row"><span>Processing Fee</span><b id="shotFee">₹0</b></div>
+  <div class="row"><span>Finance Amount</span><b id="shotFinance">₹0</b></div>
+  <div class="row"><span>Total Interest</span><b id="shotInterest">₹0</b></div>
+  <div class="row"><span>Total Repayment</span><b id="shotTotal">₹0</b></div>
+  <div class="big" id="shotEmi">₹0</div>
+  <div style="text-align:center;font-weight:700" id="shotEmiLabel">Monthly EMI</div>
+  <div class="note" style="text-align:center">Thank you for choosing .</div>
+</div>
+
+<table>
+<thead><tr><th>Month</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+<tbody id="schedule"></tbody>
+</table>
+
+<div class="note">Processing fee rule: ₹0 at startup/no loan amount. After a loan amount is entered, ₹200 is added when the loan amount after down payment is ₹3,000 or less; ₹500 is added when it is more than ₹3,000. EMI is calculated on Loan Amount + Processing Fee.</div>
+<div class="note">Personal Finance mode: down payment, annual interest rate, processing fee, EMI frequency, and tenure are manually editable. CIBIL rules are not applied in this mode.</div>
+</div>
+
+<script>
+function money(x){return "₹"+Math.round(x).toLocaleString("en-IN")}
+
+function printEMI(){
+  calculate();
+  window.print();
+}
+
+function saveScreenshot(){
+  // Always calculate from the current form values before creating the image.
+  calculate();
+
+  const price=document.getElementById("price").value;
+  const down=document.getElementById("down").value;
+  const provider=document.getElementById("provider").value;
+  const frequencyKey=document.getElementById("frequency").value;
+  const frequency=frequencyKey==="daily" ? "Daily" :
+    frequencyKey==="weekly" ? "Weekly" :
+    frequencyKey==="15days" ? "Every 15 Days" : "Monthly";
+  const tenureValue=document.getElementById("months").value;
+  const tenureUnit=frequencyKey==="daily" ? "Days" :
+    frequencyKey==="weekly" ? "Weeks" :
+    frequencyKey==="15days" ? "15-Day Periods" : "Months";
+  const tenure=tenureValue+" "+tenureUnit;
+  const rate=document.getElementById("rate").value+"% p.a.";
+  const fee=document.getElementById("processFee").textContent;
+  const payment=document.getElementById("emi").textContent;
+  const label=frequency+" EMI Payment";
+  const finance=document.getElementById("principal").textContent;
+  const interest=document.getElementById("interest").textContent;
+  const total=document.getElementById("total").textContent;
+
+  const canvas=document.createElement("canvas");
+  const scale=2, w=900, h=1120;
+  canvas.width=w*scale; canvas.height=h*scale;
+  const ctx=canvas.getContext("2d");
+  ctx.scale(scale,scale);
+
+  ctx.fillStyle="#f4f6f8"; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle="#ffffff";
+  roundRect(ctx,45,35,810,105,22); ctx.fill();
+  ctx.fillStyle="#1769e0"; ctx.font="bold 34px Arial";
+  ctx.textAlign="center"; ctx.fillText("",450,72);
+
+  // Finance name is part of the generated screenshot itself.
+  ctx.fillStyle="#1769e0"; ctx.font="bold 20px Arial";
+  ctx.fillText("ZestMoney Finance / BME Personal Finance",450,105);
+
+  ctx.fillStyle="#68737d"; ctx.font="bold 20px Arial";
+  ctx.fillText("EMI PAYMENT DETAILS",450,135);
+
+  ctx.fillStyle="#eef5ff"; roundRect(ctx,45,165,810,170,22); ctx.fill();
+  ctx.fillStyle="#17202a"; ctx.font="bold 24px Arial";
+  ctx.fillText(label,450,215);
+  ctx.fillStyle="#1769e0"; ctx.font="bold 48px Arial";
+  ctx.fillText(payment,450,280);
+  ctx.fillStyle="#68737d"; ctx.font="18px Arial";
+  ctx.fillText("Payment amount for selected frequency",450,315);
+
+  const rows=[
+    ["Mobile / Loan Amount",price],["Down Payment",down],
+    ["Finance Provider",provider],["Payment Frequency",frequency],
+    ["Tenure",tenure],["Interest Rate",rate],
+    ["Processing Fee",fee],["Finance Amount",finance],
+    ["Total Interest",interest],["Total Repayment",total]
+  ];
+  let y=385;
+  ctx.textAlign="left";
+  rows.forEach(([a,b])=>{
+    ctx.fillStyle="#17202a"; ctx.font="bold 19px Arial"; ctx.fillText(a,75,y);
+    ctx.textAlign="right"; ctx.font="bold 19px Arial"; ctx.fillText(b,825,y);
+    ctx.textAlign="left"; ctx.strokeStyle="#d9e5f4"; ctx.beginPath();
+    ctx.moveTo(75,y+15);ctx.lineTo(825,y+15);ctx.stroke(); y+=62;
+  });
+  ctx.fillStyle="#68737d"; ctx.font="16px Arial"; ctx.textAlign="center";
+  
+
+  canvas.toBlob(blob=>{
+    if(!blob){alert("Unable to create screenshot. Please try again.");return;}
+    const file=new File([blob],"Babalu-Mobiles-EMI-Details.png",{type:"image/png"});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:" EMI Details",files:[file]}).catch(()=>{});
+    }else{
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url; const providerName = document.getElementById("provider").value || "ZestMoney Finance / BME Personal Finance";
+      const safeProvider = providerName.replace(/[^a-z0-9]+/gi,"-").replace(/^-+|-+$/g,"");
+      a.download=(safeProvider || "Babalu-Mobiles") + "-EMI-Details.png";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      alert("EMI screenshot saved.");
+    }
+  },"image/png");
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+}
+
+async function shareEMI(){
+  const price=Math.max(0,+document.getElementById("price").value||0);
+  const down=Math.max(0,+document.getElementById("down").value||0);
+  const rate=Math.max(0,+document.getElementById("rate").value||0);
+  const n=+document.getElementById("months").value;
+  const loanAmount=Math.max(0,price-down);
+  const processFee=price<=0 || loanAmount<=0 ? 0 : (loanAmount>3000 ? 500 : 200);
+  const P=loanAmount+processFee;
+  const emiText=document.getElementById("emi").textContent;
+  const interest=document.getElementById("interest").textContent;
+  const total=document.getElementById("total").textContent;
+  const feeText=document.getElementById("processFee").textContent;
+  const msg=`\n\nEMI Details\nMobile/Loan: ₹${price.toLocaleString("en-IN")}\nDown Payment: ₹${down.toLocaleString("en-IN")}\nFinance Amount: ₹${P.toLocaleString("en-IN")}\nInterest: ${rate}% p.a.\nTenure: ${n} months\nMonthly EMI: ${emiText}\nTotal Interest: ${interest}\nProcessing Fee: ${feeText}\nTotal Repayment: ${total}`;
+  if(navigator.share){try{await navigator.share({title:" EMI Details",text:msg});}catch(e){}}
+  else {await navigator.clipboard.writeText(msg); alert("EMI details copied. You can paste them in WhatsApp.");}
+}
+
+
+// CIBIL base rates: higher score = lower base interest.
+const cibilBaseRate={800:10,750:12,700:15,650:18,300:22};
+
+// Down-payment discount: higher down payment = additional rate reduction.
+const downRateDiscount={20:0,25:0.5,30:1,40:2,45:2.5,50:3};
+
+const cibilLockedDownPct={800:20,750:25,700:30,650:40,300:50};
+
+function applyCibilDownPaymentLock(){
+  const price=Math.max(0,+document.getElementById("price").value||0);
+  const score=+document.getElementById("cibilScore").value;
+  const downPct=document.getElementById("downPct");
+  const down=document.getElementById("down");
+  const note=document.getElementById("cibilDownNote");
+  const lockLabel=document.getElementById("downLockLabel");
+  if(price>10000 && score>0){
+    const lockedPct=cibilLockedDownPct[score] ?? 50;
+    downPct.value=String(lockedPct); downPct.disabled=true;
+    down.value=Math.round(price*lockedPct/100); down.readOnly=true;
+    if(note) note.style.display="block"; if(lockLabel) lockLabel.textContent="🔒 CIBIL locked";
+    return lockedPct;
+  }
+  downPct.disabled=false; if(note) note.style.display="none"; if(lockLabel) lockLabel.textContent="";
+  return null;
+}
+
+function isPersonalFinance(){
+  return document.getElementById("provider").value==="personal";
+}
+
+function updateProviderMode(){
+  const personal=isPersonalFinance();
+  const cibil=document.getElementById("cibilScore");
+  const downPct=document.getElementById("downPct");
+  const down=document.getElementById("down");
+  const rate=document.getElementById("rate");
+  const rateLock=document.getElementById("rateLockLabel");
+  const feeWrap=document.getElementById("personalFeeWrap");
+  const downLock=document.getElementById("downLockLabel");
+  const cibilNote=document.getElementById("cibilDownNote");
+  const rateNote=document.getElementById("rateNote");
+
+  cibil.disabled=personal;
+  downPct.disabled=false;
+  down.readOnly=!personal;
+  rate.readOnly=!personal;
+  rate.title=personal ? "Editable Personal Finance interest rate" : "Interest rate is calculated automatically";
+  if(rateLock) rateLock.textContent=personal ? "✏️" : "🔒";
+  if(feeWrap) feeWrap.style.display=personal ? "block" : "none";
+  if(downLock) downLock.textContent="";
+  if(cibilNote) cibilNote.style.display="none";
+  if(rateNote) rateNote.style.display=personal ? "none" : (Math.max(0,+document.getElementById("price").value||0)>0 ? "block" : "none");
+
+  if(personal){
+    if(!document.getElementById("personalFee").value) document.getElementById("personalFee").value=0;
+  } else {
+    updateRate();
+  }
+  calculate();
+}
+
+function updateRate(){
+  if(isPersonalFinance()){ calculate(); return; }
+  const priceForNote=Math.max(0,+document.getElementById("price").value||0);
+  const rateNote=document.getElementById("rateNote");
+  if(rateNote) rateNote.style.display=priceForNote>0 ? "block" : "none";
+  const lockedPct=applyCibilDownPaymentLock();
+  const score=+document.getElementById("cibilScore").value;
+  const pct=lockedPct!==null ? String(lockedPct) : document.getElementById("downPct").value;
+  const base=cibilBaseRate[score] ?? 22;
+  const discount=pct!=="custom" ? (downRateDiscount[pct] ?? 0) : 0;
+  const price=Math.max(0,+document.getElementById("price").value||0);
+  const down=Math.max(0,+document.getElementById("down").value||0);
+  const actualDownPct=price>0 ? (down/price)*100 : 0;
+  // 40%+ down payment gives 0% only for Good, Very Good, or Excellent CIBIL.
+  // Fair and Lower Score customers still pay interest even with 40%+ down payment.
+  const zeroInterestEligible = score===800 || score===750 || score===700;
+  const rate=price<=0 ? 0 : ((actualDownPct>=40 && zeroInterestEligible) ? 0 : Math.max(0,base-discount));
+  document.getElementById("rate").value=rate.toFixed(2).replace(/\.00$/,'');
+  calculate();
+}
+
+function syncDownFromPct(){
+  if(isPersonalFinance()){
+    const pct=document.getElementById("downPct").value;
+    if(pct!=="custom"){
+      const price=Math.max(0,+document.getElementById("price").value||0);
+      document.getElementById("down").value=Math.round(price*+pct/100);
+    }
+    calculate(); return;
+  }
+  const lockedPct=applyCibilDownPaymentLock();
+  const pct=lockedPct!==null ? String(lockedPct) : document.getElementById("downPct").value;
+  if(pct!=="custom"){
+    const price=Math.max(0,+document.getElementById("price").value||0);
+    document.getElementById("down").value=Math.round(price*+pct/100);
+  }
+  updateRate();
+}
+
+function syncPctFromDown(){
+ const price=Math.max(0,+document.getElementById("price").value||0);
+ const down=Math.max(0,+document.getElementById("down").value||0);
+ const pct=price?down/price*100:0;
+ const sel=document.getElementById("downPct");
+ const match=[...sel.options].find(o=>o.value!=="custom" && Math.abs(+o.value-pct)<0.01);
+ sel.value=match?match.value:"custom";
+ calculate();
+}
+document.getElementById("price").addEventListener("input",()=>{ updateRate(); });
+document.getElementById("cibilScore").addEventListener("change",updateRate);
+document.getElementById("provider").addEventListener("change",updateProviderMode);
+  document.getElementById("down").addEventListener("input",()=>{ if(isPersonalFinance()) syncPctFromDown(); });
+  document.getElementById("rate").addEventListener("input",()=>{ if(isPersonalFinance()) calculate(); });
+  document.getElementById("personalFee").addEventListener("input",()=>{ if(isPersonalFinance()) calculate(); });
+
+function updateTenureOptions(){
+  const frequency=document.getElementById("frequency")?.value || "monthly";
+  const sel=document.getElementById("months");
+  const label=document.getElementById("tenureLabel");
+  const current=Number.isFinite(+sel.value) ? +sel.value : 0;
+
+  const configs = {
+    monthly:{label:"EMI Tenure (Months)", values:[0,3,6,9,12,18,24,36], fallback:0},
+    daily:{label:"EMI Tenure (Days)", values:[0,30,60,90,120,180,270,365], fallback:0},
+    weekly:{label:"EMI Tenure (Weeks)", values:[0,4,8,12,16,24,36,52], fallback:0},
+    "15days":{label:"EMI Tenure (15-Day Periods)", values:[0,2,4,6,8,12,18,24], fallback:0}
+  };
+
+  const cfg=configs[frequency] || configs.monthly;
+  label.textContent=cfg.label;
+  sel.innerHTML=cfg.values.map(v=>`<option value="${v}">${v}</option>`).join("");
+  sel.value=cfg.values.includes(current) ? current : cfg.fallback;
+}
+
+function calculate(){
+  const price=Math.max(0,Number(document.getElementById("price").value)||0);
+  const down=Math.max(0,Number(document.getElementById("down").value)||0);
+  const annual=Math.max(0,Number(document.getElementById("rate").value)||0);
+  const n=Math.max(0,Number(document.getElementById("months").value)||0);
+  const frequency=document.getElementById("frequency")?.value || "monthly";
+  const periodsPerYear =
+    frequency==="daily" ? 365 :
+    frequency==="weekly" ? 52 :
+    frequency==="15days" ? 24 : 12;
+  const periods=n;
+
+  // Loan amount after down payment.
+  const loanAmount=Math.max(0,price-down);
+
+  // REQUIRED RULE: ₹200 fee for loan amount ₹3,000 or below; ₹500 above ₹3,000.
+  const processFee = isPersonalFinance() ? Math.max(0,Number(document.getElementById("personalFee").value)||0) : (price <= 0 || loanAmount <= 0 ? 0 : (loanAmount > 3000 ? 500 : 200));
+
+  // Processing fee is financed, so EMI is calculated on loan + fee.
+  const financedAmount = loanAmount + processFee;
+  // Interest is calculated for the selected payment frequency.
+  const r=annual/(periodsPerYear*100);
+
+  let emi=0;
+  if(financedAmount>0 && n>0){
+    emi = r===0
+      ? financedAmount/n
+      : financedAmount*r*Math.pow(1+r,periods)/(Math.pow(1+r,periods)-1);
+  }
+
+  const total=emi*periods;
+  const interest=Math.max(0,total-financedAmount);
+
+  document.getElementById("providerOut").textContent=document.getElementById("provider").value;
+  document.getElementById("emi").textContent=money(emi);
+   document.getElementById("emiLabel").textContent =
+     frequency==="daily" ? "Daily EMI" :
+     frequency==="weekly" ? "Weekly EMI" :
+     frequency==="15days" ? "15 Days EMI" : "Monthly EMI";
+   document.getElementById("frequencyNote").textContent =
+     frequency==="daily" ? "Note: The amount shown is your Daily EMI payment." :
+     frequency==="weekly" ? "Note: The amount shown is your Weekly EMI payment." :
+     frequency==="15days" ? "Note: The amount shown is your 15 Days EMI payment." :
+     "Note: The amount shown is your Monthly EMI payment.";
+  document.getElementById("loanAmountOut").textContent=money(loanAmount);
+  document.getElementById("processFee").textContent=money(processFee);
+  document.getElementById("principal").textContent=money(financedAmount);
+  document.getElementById("interest").textContent=money(interest);
+  document.getElementById("total").textContent=money(total);
+
+  // Keep the on-page EMI Payment Details card synced with the live calculation.
+  const freqText =
+    frequency==="daily" ? "Daily" :
+    frequency==="weekly" ? "Weekly" :
+    frequency==="15days" ? "Every 15 Days" : "Monthly";
+  const tenureUnit =
+    frequency==="daily" ? "Days" :
+    frequency==="weekly" ? "Weeks" :
+    frequency==="15days" ? "15-Day Periods" : "Months";
+
+  document.getElementById("shotPrice").textContent=money(price);
+  document.getElementById("shotDown").textContent=money(down);
+  document.getElementById("shotProvider").textContent=document.getElementById("provider").value;
+  document.getElementById("shotFrequency").textContent=freqText;
+  document.getElementById("shotTenure").textContent=n+" "+tenureUnit;
+  document.getElementById("shotRate").textContent=annual+"%";
+  document.getElementById("shotFee").textContent=money(processFee);
+  document.getElementById("shotFinance").textContent=money(financedAmount);
+  document.getElementById("shotInterest").textContent=money(interest);
+  document.getElementById("shotTotal").textContent=money(total);
+  document.getElementById("shotEmi").textContent=money(emi);
+  document.getElementById("shotEmiLabel").textContent =
+    frequency==="daily" ? "Daily EMI" :
+    frequency==="weekly" ? "Weekly EMI" :
+    frequency==="15days" ? "15 Days EMI" : "Monthly EMI";
+
+  let bal=financedAmount, rows="";
+  for(let i=1;i<=periods;i++){
+    const int=bal*r;
+    let prin=emi-int;
+    let pay=emi;
+    if(i===periods){
+      prin=bal;
+      pay=prin+int;
+      bal=0;
+    }else{
+      bal=Math.max(0,bal-prin);
+    }
+    rows+=`<tr><td>${i}</td><td>${money(pay)}</td><td>${money(prin)}</td><td>${money(int)}</td><td>${money(bal)}</td></tr>`;
+  }
+  document.getElementById("schedule").innerHTML=rows;
+}
+updateTenureOptions();
+document.getElementById("downPct").value="0";
+document.getElementById("down").value="0";
+document.getElementById("rate").value="0";
+document.getElementById("months").value="0";
+updateProviderMode();
+</script>
+
+<script>
+let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const b = document.getElementById("installBtn");
+  if (b) b.style.display = "block";
+});
+document.addEventListener("click", async (e) => {
+  if (e.target && e.target.id === "installBtn" && deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    try { await deferredInstallPrompt.userChoice; } catch (_) {}
+    deferredInstallPrompt = null;
+    e.target.style.display = "none";
+  }
+});
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+</script>
+
+</body>
+</html>
